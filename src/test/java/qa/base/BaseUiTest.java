@@ -10,10 +10,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
-/**
- * Базовый класс для UI-тестов (Selenium WebDriver).
- * Управляет жизненным циклом браузера.
- */
 public class BaseUiTest {
 
     protected WebDriver driver;
@@ -31,12 +27,6 @@ public class BaseUiTest {
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--disable-gpu");
         options.addArguments("--window-size=1920,1080");
-        options.addArguments("--remote-allow-origins=*");
-
-        String browser = System.getProperty("browser", "chrome");
-        if (browser.equals("firefox")) {
-            // Firefox конфигурация (опционально)
-        }
 
         driver = new ChromeDriver(options);
         wait = new WebDriverWait(driver, Duration.ofSeconds(TIMEOUT_SECONDS));
@@ -50,9 +40,6 @@ public class BaseUiTest {
         }
     }
 
-    /**
-     * Открыть страницу и дождаться загрузки
-     */
     protected void openPage(String path) {
         driver.get(BASE_URL + path);
     }

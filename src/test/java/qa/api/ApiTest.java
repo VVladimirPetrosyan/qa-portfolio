@@ -2,6 +2,8 @@ package qa.api;
 
 import io.qameta.allure.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import qa.base.BaseApiTest;
 import qa.models.Post;
 
@@ -10,16 +12,10 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.*;
 
-/**
- * Тесты для REST API JSONPlaceholder — /posts
- * Покрывают CRUD-операции + негативные сценарии
- */
 @Epic("API Tests")
 @Feature("Posts API")
 @DisplayName("Posts CRUD Tests")
 public class ApiTest extends BaseApiTest {
-
-    // ======================== GET ========================
 
     @Test
     @Story("GET /posts — получить все посты")
@@ -88,8 +84,6 @@ public class ApiTest extends BaseApiTest {
         assertThat(response.jsonPath().get("body")).isInstanceOf(String.class);
     }
 
-    // ======================== POST ========================
-
     @Test
     @Story("POST /posts — создать новый пост")
     @DisplayName("POST /posts — создать пост (статус 201)")
@@ -113,9 +107,8 @@ public class ApiTest extends BaseApiTest {
     @DisplayName("POST /posts — пустое тело запроса")
     @Severity(SeverityLevel.NORMAL)
     void createPost_emptyBody_shouldHandleGracefully() {
-        var response = postRequest("/posts", {});
+        var response = postRequest("/posts", "{}");
 
-        // JSONPlaceholder вернёт 201 с null-полями (особенность демо-API)
         assertThat(response.getStatusCode()).isIn(201, 400);
     }
 
@@ -151,10 +144,7 @@ public class ApiTest extends BaseApiTest {
         var response = postRequest("/posts", post);
 
         assertThat(response.getStatusCode()).isEqualTo(201);
-        // Проверяем, что API не сломался
     }
-
-    // ======================== PUT ========================
 
     @Test
     @Story("PUT /posts — обновить пост")
@@ -174,8 +164,6 @@ public class ApiTest extends BaseApiTest {
         assertThat(response.jsonPath().getString("title")).isEqualTo("Обновлённый заголовок");
     }
 
-    // ======================== PATCH ========================
-
     @Test
     @Story("PATCH /posts — частично обновить пост")
     @DisplayName("PATCH /posts/1 — обновить только заголовок")
@@ -187,8 +175,6 @@ public class ApiTest extends BaseApiTest {
         assertThat(response.jsonPath().getString("title")).isEqualTo("Patched title");
     }
 
-    // ======================== DELETE ========================
-
     @Test
     @Story("DELETE /posts — удалить пост")
     @DisplayName("DELETE /posts/1 — удалить пост (статус 200)")
@@ -199,13 +185,10 @@ public class ApiTest extends BaseApiTest {
         assertThat(response.getStatusCode()).isEqualTo(200);
     }
 
-    // ======================== ПАРАМЕТРИЗОВАННЫЕ ========================
-
-    @Test
     @Story("GET /posts — проверить каждый пост по ID")
     @DisplayName("GET /posts/{id} — параметризованный тест для ID 1-10")
     @Severity(SeverityLevel.NORMAL)
-    @ParameterizedTest(name = "Пост с ID = {0}")
+    @ParameterizedTest(name = "Post ID = {0}")
     @ValueSource(ints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
     void getPostById_parameterized(int postId) {
         var response = getRequest("/posts/" + postId);
@@ -214,14 +197,11 @@ public class ApiTest extends BaseApiTest {
         assertThat(response.jsonPath().getInt("id")).isEqualTo(postId);
     }
 
-    // ======================== СОВМЕСТНЫЕ ТЕСТЫ ========================
-
     @Test
     @Story("POST + GET — создать и найти пост")
     @DisplayName("POST → GET — создать пост, затем найти его по ID")
     @Severity(SeverityLevel.BLOCKER)
     void createAndRetrievePost() {
-        // Создаём
         Post newPost = Post.builder()
                 .userId(1)
                 .title("Для проверки")
@@ -231,7 +211,6 @@ public class ApiTest extends BaseApiTest {
         var createResponse = postRequest("/posts", newPost);
         int newId = createResponse.jsonPath().getInt("id");
 
-        // Находим
         var getResponse = getRequest("/posts/" + newId);
         assertThat(getResponse.getStatusCode()).isEqualTo(200);
         assertThat(getResponse.jsonPath().getString("title")).isEqualTo("Для проверки");

@@ -3,6 +3,7 @@ package qa.ui;
 import io.qameta.allure.*;
 import org.junit.jupiter.api.*;
 import qa.base.BaseUiTest;
+import qa.config.TestConfig;
 import qa.pages.CatalogPage;
 import qa.pages.LoginPage;
 
@@ -10,10 +11,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
-/**
- * UI-тесты для каталога товаров (SauceDemo)
- * Проверка отображения, сортировки, добавления в корзину
- */
 @Epic("UI Tests")
 @Feature("Catalog")
 @DisplayName("Catalog Tests")
@@ -24,11 +21,9 @@ public class CatalogTest extends BaseUiTest {
     @BeforeEach
     void loginAndGoToCatalog() {
         LoginPage loginPage = new LoginPage(driver, wait);
-        loginPage.loginAs("standard_user", "secret_sauce");
+        loginPage.loginAs(TestConfig.STANDARD_USER, TestConfig.PASSWORD);
         catalogPage = new CatalogPage(driver, wait);
     }
-
-    // ======================== ОТОБРАЖЕНИЕ ========================
 
     @Test
     @Story("Каталог: отображение товаров")
@@ -69,11 +64,9 @@ public class CatalogTest extends BaseUiTest {
         assertThat(prices).allMatch(price -> price.startsWith("$"));
     }
 
-    // ======================== ДОБАВЛЕНИЕ В КОРЗИНУ ========================
-
     @Test
     @Story("Каталог: добавить товар в корзину")
-    @DisplayName("Добавить 'Sauce Labs Backpack' → кнопка меняется на 'Remove'")
+    @DisplayName("Добавить 'Sauce Labs Backpack' -> кнопка меняется на 'Remove'")
     @Severity(SeverityLevel.BLOCKER)
     void catalog_addToCart_shouldChangeButtonToRemove() {
         catalogPage.addToCart("Sauce Labs Backpack");
@@ -84,7 +77,7 @@ public class CatalogTest extends BaseUiTest {
 
     @Test
     @Story("Каталог: добавить несколько товаров")
-    @DisplayName("Добавить 3 товара → корзина показывает 3")
+    @DisplayName("Добавить 3 товара -> корзина показывает 3")
     @Severity(SeverityLevel.CRITICAL)
     void catalog_addMultipleItems_shouldUpdateBadge() {
         catalogPage.addToCart("Sauce Labs Backpack");
@@ -96,7 +89,7 @@ public class CatalogTest extends BaseUiTest {
 
     @Test
     @Story("Каталог: удалить товар из каталога")
-    @DisplayName("Добавить → удалить → кнопка возвращается")
+    @DisplayName("Добавить -> удалить -> кнопка возвращается")
     @Severity(SeverityLevel.CRITICAL)
     void catalog_addThenRemove_shouldResetButton() {
         catalogPage.addToCart("Sauce Labs Backpack");
@@ -107,8 +100,6 @@ public class CatalogTest extends BaseUiTest {
         assertThat(catalogPage.getCartCount()).isEqualTo(0);
     }
 
-    // ======================== СОРТИРОВКА ========================
-
     @Test
     @Story("Каталог: сортировка по цене (от дешёвых)")
     @DisplayName("Сортировка: Price (low to high)")
@@ -117,7 +108,6 @@ public class CatalogTest extends BaseUiTest {
         catalogPage.sortBy("lohi");
 
         List<String> prices = catalogPage.getProductPrices();
-        // Проверяем, что цены отсортированы по возрастанию
         for (int i = 0; i < prices.size() - 1; i++) {
             double current = Double.parseDouble(prices.get(i).replace("$", ""));
             double next = Double.parseDouble(prices.get(i + 1).replace("$", ""));
@@ -164,11 +154,9 @@ public class CatalogTest extends BaseUiTest {
         assertThat(names).isEqualTo(sortedDesc);
     }
 
-    // ======================== НАВИГАЦИЯ ========================
-
     @Test
     @Story("Каталог: переход в корзину")
-    @DisplayName("Каталог → Корзина: переход по иконке корзины")
+    @DisplayName("Каталог -> Корзина: переход по иконке корзины")
     @Severity(SeverityLevel.CRITICAL)
     void catalog_goToCart_shouldNavigateToCartPage() {
         var cartPage = catalogPage.goToCart();
@@ -179,7 +167,7 @@ public class CatalogTest extends BaseUiTest {
 
     @Test
     @Story("Каталог: добавить товар и перейти в корзину")
-    @DisplayName("Добавить товар → перейти в корзину → товар виден")
+    @DisplayName("Добавить товар -> перейти в корзину -> товар виден")
     @Severity(SeverityLevel.BLOCKER)
     void catalog_addAndGoToCart_shouldSeeItem() {
         catalogPage.addToCart("Sauce Labs Backpack");
@@ -190,7 +178,7 @@ public class CatalogTest extends BaseUiTest {
 
     @Test
     @Story("Каталог: выход из аккаунта")
-    @DisplayName("Бургер-меню → Logout → страница логина")
+    @DisplayName("Бургер-меню -> Logout -> страница логина")
     @Severity(SeverityLevel.NORMAL)
     void catalog_logout_shouldReturnToLoginPage() {
         var loginPage = catalogPage.logout();

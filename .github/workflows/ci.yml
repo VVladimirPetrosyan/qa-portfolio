@@ -46,8 +46,6 @@ jobs:
 
       - name: Run UI tests
         run: mvn test -Pui-tests -Dbrowser=chrome -Dallure.results.directory=target/allure-results
-        env:
-          DISPLAY: ':99'
 
       - name: Upload Allure results
         if: always()

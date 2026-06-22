@@ -59,7 +59,7 @@
 
 ```bash
 # Клонировать репозиторий
-git clone https://github.com/YOUR_USERNAME/qa-portfolio.git
+git clone https://github.com/VVladimirPetrosyan/qa-portfolio.git
 cd qa-portfolio
 
 # API-тесты
@@ -111,9 +111,8 @@ qa-portfolio/
 │       │       └── BaseUiTest.java
 │       └── resources/testdata/
 │           └── users.json           # Тестовые данные
-└── test-cases/
-    ├── test-cases.md                # 224 тест-кейса
-    └── bug-reports.md               # 6 баг-репортов
+└── 📄 test-cases.md                     # 224 тест-кейса
+📄 bug-reports.md                    # 6 баг-репортов
 ```
 
 ---
@@ -147,6 +146,4 @@ qa-portfolio/
 
 ## Контакты
 
-- **Telegram:** [ваш username]
-- **GitHub:** [ваш профиль]
-- **Email:** [ваш email]
+- **GitHub:** https://github.com/VVladimirPetrosyan/qa-portfolio

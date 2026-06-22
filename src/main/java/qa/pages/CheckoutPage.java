@@ -38,8 +38,8 @@ public class CheckoutPage {
     @Step("Заполнить данные покупателя: {firstName} {lastName}, {postalCode}")
     public CheckoutPage fillCheckoutInfo(String firstName, String lastName, String postalCode) {
         wait.until(ExpectedConditions.elementToBeClickable(FIRST_NAME_INPUT)).sendKeys(firstName);
-        driver.findElement(LAST_NAME_INPUT).sendKeys(lastName);
-        driver.findElement(POSTAL_CODE_INPUT).sendKeys(postalCode);
+        wait.until(ExpectedConditions.elementToBeClickable(LAST_NAME_INPUT)).sendKeys(lastName);
+        wait.until(ExpectedConditions.elementToBeClickable(POSTAL_CODE_INPUT)).sendKeys(postalCode);
         return this;
     }
 

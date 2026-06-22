@@ -3,17 +3,12 @@ package qa.api;
 import io.qameta.allure.*;
 import org.junit.jupiter.api.*;
 import qa.base.BaseApiTest;
-import qa.models.User;
 
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.*;
 
-/**
- * Тесты для REST API JSONPlaceholder — /users
- * Комплексные проверки с вложенными объектами
- */
 @Epic("API Tests")
 @Feature("Users API")
 @DisplayName("Users API Tests")
@@ -42,12 +37,8 @@ public class UsersApiTest extends BaseApiTest {
         assertThat(response.jsonPath().getString("email")).contains("@");
         assertThat(response.jsonPath().getString("phone")).isNotBlank();
         assertThat(response.jsonPath().getString("website")).isNotBlank();
-
-        // Вложенный объект address
         assertThat(response.jsonPath().getString("address.city")).isNotBlank();
         assertThat(response.jsonPath().getString("address.street")).isNotBlank();
-
-        // Вложенный объект company
         assertThat(response.jsonPath().getString("company.name")).isNotBlank();
     }
 

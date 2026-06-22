@@ -9,16 +9,10 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.*;
 
-/**
- * Тесты для REST API JSONPlaceholder — /comments, /albums, /todos
- * Проверка граничных значений и производительности
- */
 @Epic("API Tests")
 @Feature("Miscellaneous API")
 @DisplayName("Comments, Albums, Todos Tests")
 public class MiscApiTest extends BaseApiTest {
-
-    // ======================== COMMENTS ========================
 
     @Test
     @Story("GET /comments — получить все комментарии")
@@ -61,8 +55,6 @@ public class MiscApiTest extends BaseApiTest {
         assertThat(emails).allMatch(e -> e.contains("@"));
     }
 
-    // ======================== ALBUMS ========================
-
     @Test
     @Story("GET /albums — получить все альбомы")
     @DisplayName("GET /albums — вернуть 100 альбомов")
@@ -91,8 +83,6 @@ public class MiscApiTest extends BaseApiTest {
         List<Integer> userIds = response.jsonPath().getList("userId", Integer.class);
         assertThat(userIds).allMatch(id -> id == 1);
     }
-
-    // ======================== TODOS ========================
 
     @Test
     @Story("GET /todos — получить все задачи")
@@ -140,12 +130,9 @@ public class MiscApiTest extends BaseApiTest {
         assertThat(response.getStatusCode()).isEqualTo(200);
         List<Integer> userIds = response.jsonPath().getList("userId", Integer.class);
         List<Boolean> completed = response.jsonPath().getList("completed", Boolean.class);
-
         assertThat(userIds).allMatch(id -> id == 1);
         assertThat(completed).allMatch(b -> !b);
     }
-
-    // ======================== ПРОИЗВОДИТЕЛЬНОСТЬ ========================
 
     @Test
     @Story("GET /posts — проверка времени ответа")
