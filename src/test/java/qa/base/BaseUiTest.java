@@ -15,7 +15,11 @@ public class BaseUiTest {
     protected WebDriver driver;
     protected WebDriverWait wait;
     protected static final String BASE_URL = "https://www.saucedemo.com";
-    protected static final int TIMEOUT_SECONDS = 10;
+    // 15, не 10: на GitHub Actions рядом с десятками фреш-запусков ChromeDriver
+    // за один job часть переходов SauceDemo (счётчик корзины, чекаут) не
+    // укладывались в 10с не из-за неверных локаторов (проверены живьём) — под
+    // нагрузкой раннера рендер иногда просто отстаёт.
+    protected static final int TIMEOUT_SECONDS = 15;
 
     @BeforeEach
     void setUp() {

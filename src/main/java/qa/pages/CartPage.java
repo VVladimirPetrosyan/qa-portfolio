@@ -56,6 +56,11 @@ public class CartPage {
         String id = productName.toLowerCase().replace(" ", "-");
         By button = By.id("remove-" + id);
         wait.until(ExpectedConditions.elementToBeClickable(button)).click();
+        // isCartEmpty()/getItemCount() читают DOM без ожидания сразу после
+        // этого вызова — без явного дожидания исчезновения кнопки удаления
+        // проверка иногда успевала отработать до того, как React перерисовал
+        // список, и видела ещё не убранный элемент.
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(button));
         return this;
     }
 

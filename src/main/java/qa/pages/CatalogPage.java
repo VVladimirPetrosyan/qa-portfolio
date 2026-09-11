@@ -72,6 +72,11 @@ public class CatalogPage {
         String id = productName.toLowerCase().replace(" ", "-");
         By button = By.id("add-to-cart-" + id);
         wait.until(ExpectedConditions.elementToBeClickable(button)).click();
+        // Дожидаемся, что кнопка реально сменилась на Remove, прежде чем
+        // разрешить следующий вызов (addToCart часто зовут подряд несколько
+        // раз) — без этого клики опережали React-перерисовку и итоговый
+        // счётчик корзины/бейдж иногда не успевал обновиться до проверки.
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("remove-" + id)));
         return this;
     }
 
