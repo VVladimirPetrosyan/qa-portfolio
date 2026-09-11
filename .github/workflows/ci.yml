@@ -21,6 +21,8 @@ jobs:
           cache: maven
 
       - name: Run API tests
+        env:
+          SLUSHAYU_BASE_URL: ${{ secrets.SLUSHAYU_BASE_URL }}
         run: mvn test -Papi-tests -Dallure.results.directory=target/allure-results
 
       - name: Upload Allure results
