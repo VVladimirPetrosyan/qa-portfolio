@@ -26,7 +26,10 @@ public class CatalogPage {
     private static final By REMOVE_BUTTONS = By.cssSelector("button[id^='remove']");
     private static final By SHOPPING_CART_BADGE = By.cssSelector(".shopping_cart_badge");
     private static final By SHOPPING_CART_LINK = By.cssSelector(".shopping_cart_link");
-    private static final By SORT_DROPDOWN = By.cssSelector("[data-test='product_sort_container']");
+    // Проверено живым запросом к saucedemo.com 11.09.2026: атрибут data-test
+    // использует дефис, не подчёркивание (в отличие от CSS-класса
+    // product_sort_container) — старый локатор никогда не находил элемент.
+    private static final By SORT_DROPDOWN = By.cssSelector("[data-test='product-sort-container']");
     private static final By BURGER_MENU = By.cssSelector(".bm-burger-button");
     private static final By LOGOUT_LINK = By.id("logout_sidebar_link");
     private static final By SIDEBAR = By.cssSelector(".bm-menu");
