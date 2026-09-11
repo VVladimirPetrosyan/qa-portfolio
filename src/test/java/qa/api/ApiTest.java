@@ -78,10 +78,10 @@ public class ApiTest extends BaseApiTest {
     void getPostById_shouldHaveCorrectTypes() {
         var response = getRequest("/posts/1");
 
-        assertThat(response.jsonPath().get("id")).isInstanceOf(Integer.class);
-        assertThat(response.jsonPath().get("userId")).isInstanceOf(Integer.class);
-        assertThat(response.jsonPath().get("title")).isInstanceOf(String.class);
-        assertThat(response.jsonPath().get("body")).isInstanceOf(String.class);
+        assertThat((Object) response.jsonPath().get("id")).isInstanceOf(Integer.class);
+        assertThat((Object) response.jsonPath().get("userId")).isInstanceOf(Integer.class);
+        assertThat((Object) response.jsonPath().get("title")).isInstanceOf(String.class);
+        assertThat((Object) response.jsonPath().get("body")).isInstanceOf(String.class);
     }
 
     @Test

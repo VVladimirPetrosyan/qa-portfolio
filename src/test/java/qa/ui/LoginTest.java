@@ -134,9 +134,9 @@ public class LoginTest extends BaseUiTest {
         loginPage.open();
 
         assertThat(loginPage.isPageLoaded()).isTrue();
-        assertThat(driver.findElement(org.openqa.selenium.By.id("user-name"))).isDisplayed();
-        assertThat(driver.findElement(org.openqa.selenium.By.id("password"))).isDisplayed();
-        assertThat(driver.findElement(org.openqa.selenium.By.id("login-button"))).isDisplayed();
+        assertThat(driver.findElement(org.openqa.selenium.By.id("user-name")).isDisplayed()).isTrue();
+        assertThat(driver.findElement(org.openqa.selenium.By.id("password")).isDisplayed()).isTrue();
+        assertThat(driver.findElement(org.openqa.selenium.By.id("login-button")).isDisplayed()).isTrue();
     }
 
     @Test
