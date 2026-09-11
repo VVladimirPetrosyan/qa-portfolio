@@ -39,8 +39,11 @@ public class CartPage {
 
     @Step("Получить количество товаров в корзине")
     public int getItemCount() {
-        List<WebElement> items = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(CART_ITEMS));
-        return items.size();
+        // Не visibilityOfAllElementsLocatedBy: для пустой корзины (0 товаров)
+        // ждать нечего, и это условие честно таймаутило 15 секунд вместо
+        // того, чтобы вернуть 0. findElements не ждёт и на пустом списке
+        // просто возвращает пустой список — то, что здесь и нужно.
+        return driver.findElements(CART_ITEMS).size();
     }
 
     @Step("Получить список названий товаров в корзине")
