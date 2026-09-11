@@ -78,10 +78,10 @@ public class ApiTest extends BaseApiTest {
     void getPostById_shouldHaveCorrectTypes() {
         var response = getRequest("/posts/1");
 
-        assertThat(response.jsonPath().get("id")).isInstanceOf(Integer.class);
-        assertThat(response.jsonPath().get("userId")).isInstanceOf(Integer.class);
-        assertThat(response.jsonPath().get("title")).isInstanceOf(String.class);
-        assertThat(response.jsonPath().get("body")).isInstanceOf(String.class);
+        assertThat((Object) response.jsonPath().get("id")).isInstanceOf(Integer.class);
+        assertThat((Object) response.jsonPath().get("userId")).isInstanceOf(Integer.class);
+        assertThat((Object) response.jsonPath().get("title")).isInstanceOf(String.class);
+        assertThat((Object) response.jsonPath().get("body")).isInstanceOf(String.class);
     }
 
     @Test
@@ -198,10 +198,13 @@ public class ApiTest extends BaseApiTest {
     }
 
     @Test
-    @Story("POST + GET — создать и найти пост")
-    @DisplayName("POST → GET — создать пост, затем найти его по ID")
+    @Story("POST — создание эхом возвращает отправленные данные")
+    @DisplayName("POST /posts — 201, ответ содержит те же title/body/userId и присвоенный id")
     @Severity(SeverityLevel.BLOCKER)
-    void createAndRetrievePost() {
+    void createPost_shouldEchoSubmittedData() {
+        // JSONPlaceholder не персистит запись: id=101 присваивается эхом, но
+        // последующий GET /posts/101 всегда 404 (проверено живым вызовом) —
+        // поэтому здесь проверяем контракт создания, а не поиск после него.
         Post newPost = Post.builder()
                 .userId(1)
                 .title("Для проверки")
@@ -209,10 +212,11 @@ public class ApiTest extends BaseApiTest {
                 .build();
 
         var createResponse = postRequest("/posts", newPost);
-        int newId = createResponse.jsonPath().getInt("id");
 
-        var getResponse = getRequest("/posts/" + newId);
-        assertThat(getResponse.getStatusCode()).isEqualTo(200);
-        assertThat(getResponse.jsonPath().getString("title")).isEqualTo("Для проверки");
+        assertThat(createResponse.getStatusCode()).isEqualTo(201);
+        assertThat(createResponse.jsonPath().getInt("userId")).isEqualTo(1);
+        assertThat(createResponse.jsonPath().getString("title")).isEqualTo("Для проверки");
+        assertThat(createResponse.jsonPath().getString("body")).isEqualTo("Создан для теста нахождения");
+        assertThat(createResponse.jsonPath().getInt("id")).isPositive();
     }
 }

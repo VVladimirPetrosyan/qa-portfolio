@@ -19,7 +19,13 @@
 
         <junit.version>5.10.2</junit.version>
         <rest-assured.version>5.4.0</rest-assured.version>
-        <selenium.version>4.18.1</selenium.version>
+        <!-- 4.13.0, не более новая: это версия, с которой реально собран
+             Selenide 6.19.1 (его POM объявляет её транзитивно) — более новая
+             напрямую здесь расщепляла резолвинг подмодулей Selenium на две
+             версии одновременно и роняла NoClassDefFoundError на
+             HttpCommandExecutor$DefaultClientFactoryHolder -->
+        <selenium.version>4.13.0</selenium.version>
+        <selenide.version>6.19.1</selenide.version>
         <allure.version>2.27.0</allure.version>
         <assertj.version>3.25.3</assertj.version>
         <lombok.version>1.18.32</lombok.version>
@@ -43,11 +49,20 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Selenium WebDriver -->
+        <!-- Selenium WebDriver — compile-скоуп: Page Objects в src/main/java
+             (qa.pages.*) объявляют типы WebDriver/By и используются как из
+             тестового кода, так и потенциально как переиспользуемая библиотека -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>${selenium.version}</version>
+        </dependency>
+
+        <!-- Selenide (более компактный API поверх Selenium WebDriver) -->
+        <dependency>
+            <groupId>com.codeborne</groupId>
+            <artifactId>selenide</artifactId>
+            <version>${selenide.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -59,12 +74,12 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Allure -->
+        <!-- Allure — allure-junit5 несёт @Step, которым размечены методы
+             Page Objects в src/main/java, поэтому тоже compile-скоуп -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-junit5</artifactId>
             <version>${allure.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.qameta.allure</groupId>
@@ -160,6 +175,14 @@
                             <includes>
                                 <include>**/ui/**Test.java</include>
                             </includes>
+                            <!-- Только здесь, не в api-tests: реальные ChromeDriver-сессии
+                                 против стороннего сайта на общем CI-раннере иногда упираются
+                                 в ресурсный потолок раннера, не в код (проверено: тот же
+                                 коммит проходил за ~90с, а на перегруженном раннере — за
+                                 203с с теми же таймаутами). Surefire перезапускает тест до
+                                 2 раз и репортит его как flaky, только если падает во всех
+                                 попытках — детерминированные баги это не скрывает. -->
+                            <rerunFailingTestsCount>2</rerunFailingTestsCount>
                         </configuration>
                     </plugin>
                 </plugins>

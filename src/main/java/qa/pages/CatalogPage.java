@@ -26,7 +26,10 @@ public class CatalogPage {
     private static final By REMOVE_BUTTONS = By.cssSelector("button[id^='remove']");
     private static final By SHOPPING_CART_BADGE = By.cssSelector(".shopping_cart_badge");
     private static final By SHOPPING_CART_LINK = By.cssSelector(".shopping_cart_link");
-    private static final By SORT_DROPDOWN = By.cssSelector("[data-test='product_sort_container']");
+    // Проверено живым запросом к saucedemo.com 11.09.2026: атрибут data-test
+    // использует дефис, не подчёркивание (в отличие от CSS-класса
+    // product_sort_container) — старый локатор никогда не находил элемент.
+    private static final By SORT_DROPDOWN = By.cssSelector("[data-test='product-sort-container']");
     private static final By BURGER_MENU = By.cssSelector(".bm-burger-button");
     private static final By LOGOUT_LINK = By.id("logout_sidebar_link");
     private static final By SIDEBAR = By.cssSelector(".bm-menu");
@@ -69,6 +72,11 @@ public class CatalogPage {
         String id = productName.toLowerCase().replace(" ", "-");
         By button = By.id("add-to-cart-" + id);
         wait.until(ExpectedConditions.elementToBeClickable(button)).click();
+        // Дожидаемся, что кнопка реально сменилась на Remove, прежде чем
+        // разрешить следующий вызов (addToCart часто зовут подряд несколько
+        // раз) — без этого клики опережали React-перерисовку и итоговый
+        // счётчик корзины/бейдж иногда не успевал обновиться до проверки.
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("remove-" + id)));
         return this;
     }
 
@@ -108,8 +116,12 @@ public class CatalogPage {
 
     @Step("Сортировать товары: {option}")
     public CatalogPage sortBy(String option) {
+        // sendKeys на <select> не выбирает опцию по value — он печатает
+        // символы, что браузер трактует как type-ahead по видимому тексту.
+        // Для value=\"za\"/\"lohi\" и т.п. это не совпадало ни с одним текстом
+        // опции, поэтому сортировка молча оставалась в состоянии по умолчанию.
         WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(SORT_DROPDOWN));
-        dropdown.sendKeys(option);
+        new org.openqa.selenium.support.ui.Select(dropdown).selectByValue(option);
         return this;
     }
 
@@ -130,8 +142,12 @@ public class CatalogPage {
     @Step("Проверить, что страница каталога загружена")
     public boolean isPageLoaded() {
         try {
-            String title = wait.until(ExpectedConditions.visibilityOfElementLocated(PAGE_TITLE)).getText();
-            return title.equals("Products");
+            // textToBePresentInElementLocated ждёт именно нужный текст, а не
+            // просто видимость .title — тот же селектор есть на всех
+            // страницах, и сразу после клика на переход сюда ещё видна
+            // старая страница; visibilityOfElementLocated находил её и не ждал
+            // дальше, отчего проверка иногда срабатывала до навигации.
+            return wait.until(ExpectedConditions.textToBePresentInElementLocated(PAGE_TITLE, "Products"));
         } catch (Exception e) {
             return false;
         }

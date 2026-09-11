@@ -7,7 +7,29 @@
 
 ## Что здесь
 
-### API-тесты (Rest Assured + JUnit 5)
+Два слоя тестов: учебный (публичные демо-API/демо-магазин — база стека и
+широта покрытия) и производственный (мои собственные живые сервисы —
+показывает автотесты против настоящего прода, а не тренажёра).
+
+### Производственный слой — тесты против собственных живых сервисов
+- **9 контрактных тестов (Rest Assured)** против бэкенда одного из моих
+  боевых сервисов (домен намеренно не публикуется — хранится только в
+  секрете CI `SLUSHAYU_BASE_URL`, локально без него этот пакет
+  пропускается через `@EnabledIfEnvironmentVariable`, а не падает):
+  healthcheck-роутинг, контракт вебхука ЮKassa (пустое тело, битый JSON,
+  неизвестное событие, сфабрикованный `payment.succeeded`), авторизация
+  `/state`. Тестирование нашло два реальных дефекта прод-сервиса —
+  `BUG-007` и `BUG-008` в `bug-reports.md`.
+- **9 UI-тестов (Selenium)** против живого продукта
+  [do-offera.github.io](https://do-offera.github.io) (конструктор резюме):
+  заполнение формы и живой предпросмотр, прогресс-бар готовности, тег-инпут
+  навыков, cookie-баннер и `localStorage`, диалоги подтверждения (`confirm`)
+  на сброс формы, проверка внешней ссылки на реальный контакт.
+- **3 теста той же цели через Selenide** — тот же живой сайт, но через
+  компактный API (`$()`/`shouldHave()`) поверх Selenium WebDriver, а не
+  голый `driver.findElement`.
+
+### API-тесты (Rest Assured + JUnit 5) — учебный слой
 - **34 теста** для REST API JSONPlaceholder
 - CRUD-операции: GET, POST, PUT, PATCH, DELETE
 - Параметризованные тесты (`@ParameterizedTest`)
@@ -15,7 +37,7 @@
 - Граничные значения и негативные сценарии
 - Проверка времени ответа (SLA)
 
-### UI-тесты (Selenium WebDriver + Page Object)
+### UI-тесты (Selenium WebDriver + Page Object) — учебный слой
 - **27 тестов** для интернет-магазина SauceDemo
 - Page Object Model (4 страницы: Login, Catalog, Cart, Checkout)
 - E2E-сценарий: Логин → Каталог → Корзина → Checkout → Завершение
@@ -25,7 +47,8 @@
 
 ### Тестовая документация
 - **224 тест-кейса** (покрытие требований > 90%)
-- **6 баг-репортов** в формате Jira
+- **8 баг-репортов** в формате Jira — 2 из них найдены автотестами против
+  собственного прод-сервиса, не придуманы для демонстрации
 - Приоритезация: Critical/High (85), Medium (95), Low (44)
 
 ### CI/CD
@@ -77,6 +100,10 @@ mvn allure:serve
 
 ### CI/CD
 Тесты запускаются автоматически при пуше в `main` или `develop`.
+Прод-слой `api/slushayu` запускается только там, где задана переменная
+окружения `SLUSHAYU_BASE_URL` (в CI — секрет репозитория, не виден
+форк-PR по умолчанию в GitHub Actions); без неё локально этот пакет тихо
+пропускается — `mvn test` остаётся зелёным.
 
 ---
 
@@ -98,21 +125,31 @@ qa-portfolio/
 │   │       └── User.java
 │   └── test/
 │       ├── java/qa/
-│       │   ├── api/                 # API-тесты
+│       │   ├── api/                 # API-тесты (учебный слой — JSONPlaceholder)
 │       │   │   ├── ApiTest.java
 │       │   │   ├── UsersApiTest.java
-│       │   │   └── MiscApiTest.java
-│       │   ├── ui/                  # UI-тесты
+│       │   │   ├── MiscApiTest.java
+│       │   │   └── slushayu/        # Прод-слой — контракт живого бэкенда
+│       │   │       ├── BaseSlushayuApiTest.java
+│       │   │       ├── SlushayuHealthcheckTest.java
+│       │   │       ├── SlushayuWebhookTest.java
+│       │   │       └── SlushayuStateAuthTest.java
+│       │   ├── ui/                  # UI-тесты (учебный слой — SauceDemo)
 │       │   │   ├── LoginTest.java
 │       │   │   ├── CatalogTest.java
-│       │   │   └── CartTest.java
-│       │   └── base/                # Базовые классы
+│       │   │   ├── CartTest.java
+│       │   │   └── dooffera/        # Прод-слой — живой do-offera.github.io
+│       │   │       ├── BaseDooferaUiTest.java
+│       │   │       ├── DooferaResumeBuilderTest.java
+│       │   │       ├── DooferaConsentTest.java
+│       │   │       └── DooferaSelenideTest.java
+│       │   └── base/                # Базовые классы (учебный слой)
 │       │       ├── BaseApiTest.java
 │       │       └── BaseUiTest.java
 │       └── resources/testdata/
 │           └── users.json           # Тестовые данные
 └── 📄 test-cases.md                     # 224 тест-кейса
-📄 bug-reports.md                    # 6 баг-репортов
+📄 bug-reports.md                    # 8 баг-репортов
 ```
 
 ---
@@ -140,7 +177,10 @@ qa-portfolio/
 | UI: Login | 10 | Позитив + негатив |
 | UI: Catalog | 13 | Отображение, сортировка, корзина |
 | UI: Cart & Checkout | 14 | E2E + валидация |
-| **Итого** | **61** | |
+| **API: Слушаю (прод)** | **9** | Healthcheck-роутинг, контракт вебхука ЮKassa, auth `/state` |
+| **UI: до оффера. (прод)** | **9** | Форма и превью резюме, прогресс, теги, cookie-consent |
+| **UI: до оффера. (Selenide)** | **3** | Та же прод-цель, компактный API поверх Selenium |
+| **Итого** | **82** | |
 
 ---
 

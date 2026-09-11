@@ -101,8 +101,10 @@ public class CheckoutPage {
     @Step("Проверить, что страница Checkout загружена")
     public boolean isPageLoaded() {
         try {
-            String title = wait.until(ExpectedConditions.visibilityOfElementLocated(PAGE_TITLE)).getText();
-            return title.contains("Checkout");
+            // См. CatalogPage.isPageLoaded() — textToBePresentInElementLocated
+            // и так проверяет через contains(), ждёт нужный текст, а не любую
+            // видимость .title со старой страницы.
+            return wait.until(ExpectedConditions.textToBePresentInElementLocated(PAGE_TITLE, "Checkout"));
         } catch (Exception e) {
             return false;
         }

@@ -39,8 +39,11 @@ public class CartPage {
 
     @Step("Получить количество товаров в корзине")
     public int getItemCount() {
-        List<WebElement> items = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(CART_ITEMS));
-        return items.size();
+        // Не visibilityOfAllElementsLocatedBy: для пустой корзины (0 товаров)
+        // ждать нечего, и это условие честно таймаутило 15 секунд вместо
+        // того, чтобы вернуть 0. findElements не ждёт и на пустом списке
+        // просто возвращает пустой список — то, что здесь и нужно.
+        return driver.findElements(CART_ITEMS).size();
     }
 
     @Step("Получить список названий товаров в корзине")
@@ -56,6 +59,11 @@ public class CartPage {
         String id = productName.toLowerCase().replace(" ", "-");
         By button = By.id("remove-" + id);
         wait.until(ExpectedConditions.elementToBeClickable(button)).click();
+        // isCartEmpty()/getItemCount() читают DOM без ожидания сразу после
+        // этого вызова — без явного дожидания исчезновения кнопки удаления
+        // проверка иногда успевала отработать до того, как React перерисовал
+        // список, и видела ещё не убранный элемент.
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(button));
         return this;
     }
 
@@ -84,8 +92,10 @@ public class CartPage {
     @Step("Проверить, что страница корзины загружена")
     public boolean isPageLoaded() {
         try {
-            String title = wait.until(ExpectedConditions.visibilityOfElementLocated(PAGE_TITLE)).getText();
-            return title.equals("Your Cart");
+            // См. CatalogPage.isPageLoaded(): ждём именно нужный текст, не
+            // просто видимость .title — иначе проверка иногда видит .title
+            // прошлой страницы до завершения перехода.
+            return wait.until(ExpectedConditions.textToBePresentInElementLocated(PAGE_TITLE, "Your Cart"));
         } catch (Exception e) {
             return false;
         }

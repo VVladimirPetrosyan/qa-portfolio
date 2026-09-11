@@ -1,4 +1,4 @@
-package qa.base;
+package qa.ui.dooffera;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
@@ -10,16 +10,17 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
-public class BaseUiTest {
+/**
+ * Живой прод-таргет: https://do-offera.github.io — статический конструктор
+ * резюме (собственный продукт), без бэкенда. В отличие от SauceDemo/
+ * JSONPlaceholder — это реальный, а не тренировочный сайт.
+ */
+public class BaseDooferaUiTest {
 
     protected WebDriver driver;
     protected WebDriverWait wait;
-    protected static final String BASE_URL = "https://www.saucedemo.com";
-    // 15, не 10: на GitHub Actions рядом с десятками фреш-запусков ChromeDriver
-    // за один job часть переходов SauceDemo (счётчик корзины, чекаут) не
-    // укладывались в 10с не из-за неверных локаторов (проверены живьём) — под
-    // нагрузкой раннера рендер иногда просто отстаёт.
-    protected static final int TIMEOUT_SECONDS = 15;
+    protected static final String BASE_URL = "https://do-offera.github.io";
+    protected static final int TIMEOUT_SECONDS = 10;
 
     @BeforeEach
     void setUp() {
@@ -34,7 +35,6 @@ public class BaseUiTest {
 
         driver = new ChromeDriver(options);
         wait = new WebDriverWait(driver, Duration.ofSeconds(TIMEOUT_SECONDS));
-        driver.manage().window().maximize();
     }
 
     @AfterEach

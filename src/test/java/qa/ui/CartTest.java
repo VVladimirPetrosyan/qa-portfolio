@@ -143,7 +143,9 @@ public class CartTest extends BaseUiTest {
         checkoutPage.fillCheckoutInfo("Roman", "Shklyaev", "");
         checkoutPage.clickContinue();
 
-        assertThat(checkoutPage.getErrorMessage()).contains("Postal/Zip code is required");
+        // Проверено живым прогоном 11.09.2026: реальный текст на saucedemo.com
+        // — "Postal Code is required", без "/Zip".
+        assertThat(checkoutPage.getErrorMessage()).contains("Postal Code is required");
     }
 
     @Test
