@@ -44,12 +44,13 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Selenium WebDriver -->
+        <!-- Selenium WebDriver — compile-скоуп: Page Objects в src/main/java
+             (qa.pages.*) объявляют типы WebDriver/By и используются как из
+             тестового кода, так и потенциально как переиспользуемая библиотека -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>${selenium.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- Selenide (более компактный API поверх Selenium WebDriver) -->
@@ -68,12 +69,12 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Allure -->
+        <!-- Allure — allure-junit5 несёт @Step, которым размечены методы
+             Page Objects в src/main/java, поэтому тоже compile-скоуп -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-junit5</artifactId>
             <version>${allure.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.qameta.allure</groupId>
