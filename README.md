@@ -25,6 +25,9 @@
   заполнение формы и живой предпросмотр, прогресс-бар готовности, тег-инпут
   навыков, cookie-баннер и `localStorage`, диалоги подтверждения (`confirm`)
   на сброс формы, проверка внешней ссылки на реальный контакт.
+- **3 теста той же цели через Selenide** — тот же живой сайт, но через
+  компактный API (`$()`/`shouldHave()`) поверх Selenium WebDriver, а не
+  голый `driver.findElement`.
 
 ### API-тесты (Rest Assured + JUnit 5) — учебный слой
 - **34 теста** для REST API JSONPlaceholder
@@ -138,14 +141,15 @@ qa-portfolio/
 │       │   │   └── dooffera/        # Прод-слой — живой do-offera.github.io
 │       │   │       ├── BaseDooferaUiTest.java
 │       │   │       ├── DooferaResumeBuilderTest.java
-│       │   │       └── DooferaConsentTest.java
+│       │   │       ├── DooferaConsentTest.java
+│       │   │       └── DooferaSelenideTest.java
 │       │   └── base/                # Базовые классы (учебный слой)
 │       │       ├── BaseApiTest.java
 │       │       └── BaseUiTest.java
 │       └── resources/testdata/
 │           └── users.json           # Тестовые данные
 └── 📄 test-cases.md                     # 224 тест-кейса
-📄 bug-reports.md                    # 6 баг-репортов
+📄 bug-reports.md                    # 8 баг-репортов
 ```
 
 ---
@@ -175,7 +179,8 @@ qa-portfolio/
 | UI: Cart & Checkout | 14 | E2E + валидация |
 | **API: Слушаю (прод)** | **9** | Healthcheck-роутинг, контракт вебхука ЮKassa, auth `/state` |
 | **UI: до оффера. (прод)** | **9** | Форма и превью резюме, прогресс, теги, cookie-consent |
-| **Итого** | **79** | |
+| **UI: до оффера. (Selenide)** | **3** | Та же прод-цель, компактный API поверх Selenium |
+| **Итого** | **82** | |
 
 ---
 

@@ -20,6 +20,7 @@
         <junit.version>5.10.2</junit.version>
         <rest-assured.version>5.4.0</rest-assured.version>
         <selenium.version>4.18.1</selenium.version>
+        <selenide.version>6.19.1</selenide.version>
         <allure.version>2.27.0</allure.version>
         <assertj.version>3.25.3</assertj.version>
         <lombok.version>1.18.32</lombok.version>
@@ -48,6 +49,14 @@
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>${selenium.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Selenide (более компактный API поверх Selenium WebDriver) -->
+        <dependency>
+            <groupId>com.codeborne</groupId>
+            <artifactId>selenide</artifactId>
+            <version>${selenide.version}</version>
             <scope>test</scope>
         </dependency>
 
