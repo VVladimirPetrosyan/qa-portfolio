@@ -116,8 +116,12 @@ public class CatalogPage {
 
     @Step("Сортировать товары: {option}")
     public CatalogPage sortBy(String option) {
+        // sendKeys на <select> не выбирает опцию по value — он печатает
+        // символы, что браузер трактует как type-ahead по видимому тексту.
+        // Для value=\"za\"/\"lohi\" и т.п. это не совпадало ни с одним текстом
+        // опции, поэтому сортировка молча оставалась в состоянии по умолчанию.
         WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(SORT_DROPDOWN));
-        dropdown.sendKeys(option);
+        new org.openqa.selenium.support.ui.Select(dropdown).selectByValue(option);
         return this;
     }
 
@@ -138,8 +142,12 @@ public class CatalogPage {
     @Step("Проверить, что страница каталога загружена")
     public boolean isPageLoaded() {
         try {
-            String title = wait.until(ExpectedConditions.visibilityOfElementLocated(PAGE_TITLE)).getText();
-            return title.equals("Products");
+            // textToBePresentInElementLocated ждёт именно нужный текст, а не
+            // просто видимость .title — тот же селектор есть на всех
+            // страницах, и сразу после клика на переход сюда ещё видна
+            // старая страница; visibilityOfElementLocated находил её и не ждал
+            // дальше, отчего проверка иногда срабатывала до навигации.
+            return wait.until(ExpectedConditions.textToBePresentInElementLocated(PAGE_TITLE, "Products"));
         } catch (Exception e) {
             return false;
         }

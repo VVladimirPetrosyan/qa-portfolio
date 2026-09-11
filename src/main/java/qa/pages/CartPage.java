@@ -89,8 +89,10 @@ public class CartPage {
     @Step("Проверить, что страница корзины загружена")
     public boolean isPageLoaded() {
         try {
-            String title = wait.until(ExpectedConditions.visibilityOfElementLocated(PAGE_TITLE)).getText();
-            return title.equals("Your Cart");
+            // См. CatalogPage.isPageLoaded(): ждём именно нужный текст, не
+            // просто видимость .title — иначе проверка иногда видит .title
+            // прошлой страницы до завершения перехода.
+            return wait.until(ExpectedConditions.textToBePresentInElementLocated(PAGE_TITLE, "Your Cart"));
         } catch (Exception e) {
             return false;
         }
